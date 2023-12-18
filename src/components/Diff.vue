@@ -33,8 +33,8 @@ import 'highlight.js/styles/github.css';
 export default defineComponent({
   data() {
     return {
-      leftText: 'Hello Left World',
-      rightText: 'Hello Right World',
+      leftText: 'Hello Left World\n',
+      rightText: 'Hello Right World\n',
       newlineIsToken: false,
       ignoreCase: false,
       ignoreWhitespace: false,
