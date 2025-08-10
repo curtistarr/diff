@@ -1,24 +1,24 @@
 <template>
   <div class="container">
     <div class="text-area-container">
-      <div>
+      <div class="panel card">
         <h3>Left</h3>
         <textarea class="text-area" v-model="leftText"/>
       </div>
 
-      <div>
+      <div class="panel card">
         <h3>Right</h3>
         <textarea class="text-area" v-model="rightText"/>
       </div>  
     </div>
 
-    <div>
-      <input type="checkbox" v-model="newlineIsToken"> Newline is Token
-      <input type="checkbox" v-model="ignoreCase"> Ignore Case
-      <input type="checkbox" v-model="ignoreWhitespace"> Ignore Whitespace
+    <div class="controls card">
+      <label><input type="checkbox" v-model="newlineIsToken"> Newline is Token</label>
+      <label><input type="checkbox" v-model="ignoreCase"> Ignore Case</label>
+      <label><input type="checkbox" v-model="ignoreWhitespace"> Ignore Whitespace</label>
     </div>
 
-    <div class="diff-output">
+    <div class="diff-output card">
       <pre v-html="highlightedDifferences"></pre>
     </div>
   </div>
@@ -28,7 +28,7 @@
 import { defineComponent } from 'vue';
 import { createTwoFilesPatch, PatchOptions } from 'diff';
 import hljs from 'highlight.js';
-import 'highlight.js/styles/github.css';
+import 'highlight.js/styles/github-dark-dimmed.css';
 
 export default defineComponent({
   data() {
@@ -60,25 +60,53 @@ export default defineComponent({
 .container {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  height: 100vh;
+  gap: var(--space-8);
 }
 
 .text-area-container {
-  display: flex;
-  gap: 20px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+}
+@media (min-width: 900px) {
+  .text-area-container {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.panel {
+  padding: var(--space-4);
+}
+.panel h3 {
+  margin-bottom: var(--space-3);
 }
 
 .text-area {
-  width: 40vw;
-  height: 40vh;
+  width: 100%;
+  min-height: clamp(220px, 35vh, 380px);
+  resize: vertical;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3) var(--space-6);
+  align-items: center;
+  padding: var(--space-4);
+  border-radius: var(--radius);
+}
+.controls label {
+  display: inline-flex;
+  gap: var(--space-2);
+  align-items: center;
+  color: var(--muted);
 }
 
 .diff-output {
-  margin-top: 20px;
-  padding: 20px;
-  background-color: rgb(0, 0, 0);
-  width: 80vw;
+  padding: 0; /* pre has its own padding from global styles */
   text-align: left;
+}
+.diff-output :deep(pre) {
+  max-height: 50vh;
 }
 </style>

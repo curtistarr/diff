@@ -13,9 +13,14 @@ import Diff from './components/Diff.vue'
 <style scoped>
 .github-logo {
   position: fixed;
-  top: 10px;
-  left: 10px;
-  width: 30px;
-  height: 30px;
+  top: 14px;
+  left: 14px;
+  width: 32px;
+  height: 32px;
+  opacity: 0.8;
+  transition: transform .15s ease, opacity .2s ease, filter .2s ease;
 }
+.github-logo:hover { transform: scale(1.06); opacity: 1; filter: drop-shadow(0 6px 16px rgba(0,0,0,.4)); }
+
+h2 { margin: 12px 0 18px; }
 </style>
