@@ -83,7 +83,10 @@ export default defineComponent({
       return createTwoFilesPatch('Left', 'Right', this.leftText, this.rightText, '', '', this.diffOptions);
     },
     highlightedDifferences(): string {
-      return hljs.highlight('diff', this.differences).value;
+      return hljs.highlight(this.differences, {
+        language: 'diff',
+        ignoreIllegals: true,
+      }).value;
     },
     splitRows(): SplitRow[] {
       const chunks: Change[] = diffLines(this.leftText, this.rightText, this.diffOptions);
