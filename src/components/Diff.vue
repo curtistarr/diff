@@ -243,15 +243,15 @@ export default defineComponent({
 }
 
 .cell.added {
-  background-color: rgba(46, 160, 67, 0.15);
+  background-color: var(--diff-added);
 }
 
 .cell.removed {
-  background-color: rgba(248, 81, 73, 0.15);
+  background-color: var(--diff-removed);
 }
 
 .cell.unchanged {
-  background-color: rgba(110, 118, 129, 0.08);
+  background-color: var(--diff-neutral);
 }
 
 .cell.empty {
