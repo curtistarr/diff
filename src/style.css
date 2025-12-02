@@ -78,6 +78,27 @@
   color-scheme: light;
 }
 
+:root[data-theme="underwater"] {
+  --bg: #0a1628;             /* Deep ocean blue */
+  --bg-elev: #0d1f38;        /* Slightly elevated ocean */
+  --surface: #1a3a52;        /* Mid-ocean teal */
+  --surface-1: #132a3f;      /* Ocean variant */
+  --text: #c8e6f5;           /* Light cyan text */
+  --muted: #7aa4c4;          /* Medium cyan-gray */
+  --primary: #00bcd4;        /* Cyan accent */
+  --primary-600: #00a8c9;    /* Darker cyan for hover */
+  --ring: rgba(0, 188, 212, 0.35);
+  --border: rgba(0, 176, 220, 0.15);
+  --border-subtle: rgba(0, 176, 220, 0.25);
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+
+  --diff-added: rgba(52, 211, 153, 0.25);    /* Emerald green */
+  --diff-removed: rgba(248, 113, 113, 0.25); /* Red coral */
+  --diff-neutral: rgba(100, 150, 170, 0.15); /* Ocean gray */
+
+  color-scheme: dark;
+}
+
 /* Modern CSS reset (minimal) */
 *, *::before, *::after { box-sizing: border-box; }
 * { margin: 0; }
@@ -105,6 +126,14 @@ body {
 :root[data-theme="light"] body {
   background: radial-gradient(1200px 600px at 10% -10%, rgba(99,102,241,0.14), transparent),
               radial-gradient(1000px 500px at 110% 10%, rgba(16,185,129,0.12), transparent),
+              var(--bg);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+:root[data-theme="underwater"] body {
+  background: radial-gradient(1200px 600px at 10% -10%, rgba(0,188,212,0.12), transparent),
+              radial-gradient(1000px 500px at 110% 10%, rgba(52,211,153,0.08), transparent),
               var(--bg);
   background-repeat: no-repeat;
   background-attachment: fixed;

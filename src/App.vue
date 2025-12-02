@@ -2,7 +2,7 @@
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import Diff from './components/Diff.vue';
 
-type ThemePreference = 'system' | 'light' | 'dark';
+type ThemePreference = 'system' | 'light' | 'dark' | 'underwater';
 
 const themePreference = ref<ThemePreference>('system');
 const systemPrefersDark = ref(false);
@@ -54,6 +54,7 @@ watch(themePreference, applyTheme);
         <option value="system">System</option>
         <option value="light">Light</option>
         <option value="dark">Dark</option>
+        <option value="underwater">Underwater</option>
       </select>
     </label>
   </header>
