@@ -52,7 +52,6 @@
 import { defineComponent } from 'vue';
 import { createTwoFilesPatch, diffLines, Change, PatchOptions } from 'diff';
 import hljs from 'highlight.js';
-import 'highlight.js/styles/github-dark-dimmed.css';
 
 type SplitRow = {
   leftText: string;
@@ -202,6 +201,7 @@ export default defineComponent({
 .diff-output {
   padding: 0; /* pre has its own padding from global styles */
   text-align: left;
+  max-width: 90vw;
 }
 .diff-output :deep(pre) {
   max-height: 50vh;
@@ -211,11 +211,12 @@ export default defineComponent({
   display: grid;
   grid-template-rows: auto 1fr;
   gap: var(--space-2);
+  overflow-x: auto;
 }
 
 .split-header {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: var(--space-1);
   padding: 0 var(--space-3);
   font-weight: 600;
@@ -224,9 +225,10 @@ export default defineComponent({
 
 .split-body {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: var(--space-1);
   align-items: start;
+  width: 100%;
 }
 
 .split-row {
