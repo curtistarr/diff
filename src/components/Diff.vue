@@ -331,6 +331,23 @@ export default defineComponent({
   color: var(--muted);
   user-select: none;
   min-width: 2.5rem;
+  border-right: 1px solid var(--border);
+}
+
+.line-num.added {
+  background-color: var(--diff-added-gutter);
+}
+
+.line-num.removed {
+  background-color: var(--diff-removed-gutter);
+}
+
+.line-num.unchanged {
+  background-color: var(--bg-elev);
+}
+
+.line-num.empty {
+  background-color: transparent;
 }
 
 .cell {
