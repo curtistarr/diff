@@ -28,12 +28,6 @@
       <pre v-if="displayMode === 'combined'" v-html="highlightedDifferences"></pre>
 
       <div v-else class="split-diff" aria-label="Split diff view">
-        <div class="split-header">
-          <div></div>
-          <div>Left</div>
-          <div></div>
-          <div>Right</div>
-        </div>
         <div class="split-body" role="table" aria-label="Side by side diff">
           <div
             v-for="(row, index) in splitRows"
@@ -293,22 +287,17 @@ export default defineComponent({
 }
 .diff-output :deep(pre) {
   max-height: 50vh;
+  background: transparent;
+  border: none;
+  padding: var(--space-6);
 }
 
 .split-diff {
   display: grid;
   grid-template-rows: auto 1fr;
-  gap: var(--space-2);
   overflow-x: auto;
-}
-
-.split-header {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto minmax(0, 1fr);
-  gap: 0 var(--space-1);
-  padding: 0 var(--space-3);
-  font-weight: 600;
-  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
 }
 
 .split-body {
@@ -317,6 +306,7 @@ export default defineComponent({
   gap: 0;
   align-items: start;
   width: 100%;
+  padding: var(--space-6);
 }
 
 .split-row {
@@ -343,7 +333,7 @@ export default defineComponent({
 }
 
 .line-num.unchanged {
-  background-color: var(--bg-elev);
+  background-color: transparent;
 }
 
 .line-num.empty {
@@ -366,7 +356,7 @@ export default defineComponent({
 }
 
 .cell.unchanged {
-  background-color: var(--diff-neutral);
+  background-color: transparent;
 }
 
 .cell.empty {
@@ -374,14 +364,8 @@ export default defineComponent({
 }
 
 @media (max-width: 720px) {
-  .split-body,
-  .split-header {
-    grid-template-columns: auto 1fr;
-  }
-
-  .split-row {
-    display: grid;
-    grid-template-columns: auto 1fr;
+  .split-body {
+    grid-template-columns: auto 1fr auto 1fr;
   }
 }
 </style>

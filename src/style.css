@@ -210,7 +210,7 @@ pre {
 }
 
 .diff-output .hljs {
-  background: var(--surface);
+  background: transparent;
   color: var(--text);
 }
 
@@ -262,7 +262,7 @@ pre {
 }
 
 .diff-output .line-content:has(.hljs-meta) {
-  background-color: var(--diff-neutral);
+  background-color: transparent;
 }
 
 .diff-output .hljs-meta {
