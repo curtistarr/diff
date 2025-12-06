@@ -203,31 +203,48 @@ pre {
   transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
-.diff-output :deep(.hljs) {
+.diff-output .hljs {
   background: var(--surface);
   color: var(--text);
 }
 
-.diff-output :deep(.hljs-addition),
-.diff-output :deep(.hljs-deletion),
-.diff-output :deep(.hljs-meta) {
-  display: block;
-  padding: 0.2rem 0.5rem;
-  margin: 0 -0.5rem;
-  border-radius: var(--radius-sm);
+.diff-output .diff-line {
+  display: flex;
+  line-height: 1.5;
 }
 
-.diff-output :deep(.hljs-addition) {
-  background-color: var(--diff-added);
-  color: inherit;
-}
-
-.diff-output :deep(.hljs-deletion) {
-  background-color: var(--diff-removed);
-  color: inherit;
-}
-
-.diff-output :deep(.hljs-meta) {
+.diff-output .diff-line > .line-num {
+  min-width: 2.5rem;
+  padding: 0 0.5rem;
+  text-align: right;
   color: var(--muted);
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.diff-output .diff-line > .line-content {
+  flex: 1;
+  padding: 0 0.5rem;
+}
+
+.diff-output .hljs-addition,
+.diff-output .hljs-deletion,
+.diff-output .hljs-meta {
+  display: inline;
+}
+
+.diff-output .line-content:has(.hljs-addition) {
+  background-color: var(--diff-added);
+}
+
+.diff-output .line-content:has(.hljs-deletion) {
+  background-color: var(--diff-removed);
+}
+
+.diff-output .line-content:has(.hljs-meta) {
   background-color: var(--diff-neutral);
+}
+
+.diff-output .hljs-meta {
+  color: var(--muted);
 }

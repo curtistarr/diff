@@ -29,7 +29,9 @@
 
       <div v-else class="split-diff" aria-label="Split diff view">
         <div class="split-header">
+          <div></div>
           <div>Left</div>
+          <div></div>
           <div>Right</div>
         </div>
         <div class="split-body" role="table" aria-label="Side by side diff">
@@ -39,7 +41,9 @@
             class="split-row"
             role="row"
           >
+            <div :class="['line-num', row.leftType]" role="cell">{{ row.leftLineNum }}</div>
             <div :class="['cell', row.leftType]" role="cell">{{ row.leftText }}</div>
+            <div :class="['line-num', row.rightType]" role="cell">{{ row.rightLineNum }}</div>
             <div :class="['cell', row.rightType]" role="cell">{{ row.rightText }}</div>
           </div>
         </div>
@@ -58,13 +62,15 @@ type SplitRow = {
   rightText: string;
   leftType: 'added' | 'removed' | 'unchanged' | 'empty';
   rightType: 'added' | 'removed' | 'unchanged' | 'empty';
+  leftLineNum: number | null;
+  rightLineNum: number | null;
 };
 
 export default defineComponent({
   data() {
     return {
-      leftText: 'Hello Left World\n',
-      rightText: 'Hello Right World\n',
+      leftText: 'function logHelloWorld() {\n  console.log("Hello, Left World!");\n}\n',
+      rightText: 'function logHelloWorld() {\n  console.log("Hello, Right World!");\n}\n',
       newlineIsToken: false,
       ignoreCase: false,
       ignoreWhitespace: false,
@@ -83,10 +89,62 @@ export default defineComponent({
       return createTwoFilesPatch('Left', 'Right', this.leftText, this.rightText, '', '', this.diffOptions);
     },
     highlightedDifferences(): string {
-      return hljs.highlight(this.differences, {
+      const highlighted = hljs.highlight(this.differences, {
         language: 'diff',
         ignoreIllegals: true,
       }).value;
+
+      // Parse diff and add line numbers
+      const lines = highlighted.split('\n');
+      let leftLine = 0;
+      let rightLine = 0;
+      let inHunk = false;
+
+      const numberedLines = lines.map((line) => {
+        // Skip empty lines entirely
+        if (line === '') {
+          return '';
+        }
+
+        // Check for hunk header (e.g., @@ -1,3 +1,3 @@)
+        if (line.includes('hljs-meta') && line.includes('@@')) {
+          const match = line.match(/@@ -(\d+)/);
+          if (match) {
+            leftLine = parseInt(match[1], 10);
+            rightLine = parseInt(match[1], 10);
+            // Also check for right side starting line
+            const rightMatch = line.match(/\+(\d+)/);
+            if (rightMatch) {
+              rightLine = parseInt(rightMatch[1], 10);
+            }
+          }
+          inHunk = true;
+          return `<span class="diff-line"><span class="line-num"></span><span class="line-num"></span><span class="line-content">${line}</span></span>`;
+        }
+
+        if (!inHunk) {
+          return `<span class="diff-line"><span class="line-num"></span><span class="line-num"></span><span class="line-content">${line}</span></span>`;
+        }
+
+        // Deletion line
+        if (line.includes('hljs-deletion')) {
+          const leftNum = leftLine++;
+          return `<span class="diff-line"><span class="line-num">${leftNum}</span><span class="line-num"></span><span class="line-content">${line}</span></span>`;
+        }
+
+        // Addition line
+        if (line.includes('hljs-addition')) {
+          const rightNum = rightLine++;
+          return `<span class="diff-line"><span class="line-num"></span><span class="line-num">${rightNum}</span><span class="line-content">${line}</span></span>`;
+        }
+
+        // Context line (unchanged)
+        const leftNum = leftLine++;
+        const rightNum = rightLine++;
+        return `<span class="diff-line"><span class="line-num">${leftNum}</span><span class="line-num">${rightNum}</span><span class="line-content">${line}</span></span>`;
+      });
+
+      return numberedLines.filter((line) => line !== '').join('');
     },
     splitRows(): SplitRow[] {
       const chunks: Change[] = diffLines(this.leftText, this.rightText, this.diffOptions);
@@ -100,6 +158,8 @@ export default defineComponent({
         return lines;
       };
 
+      let leftLineNum = 1;
+      let rightLineNum = 1;
       let index = 0;
       while (index < chunks.length) {
         const current = chunks[index];
@@ -111,11 +171,15 @@ export default defineComponent({
           const maxLines = Math.max(leftLines.length, rightLines.length);
 
           for (let i = 0; i < maxLines; i += 1) {
+            const hasLeft = leftLines[i] !== undefined;
+            const hasRight = rightLines[i] !== undefined;
             rows.push({
               leftText: leftLines[i] ?? '',
               rightText: rightLines[i] ?? '',
-              leftType: leftLines[i] !== undefined ? 'removed' : 'empty',
-              rightType: rightLines[i] !== undefined ? 'added' : 'empty',
+              leftType: hasLeft ? 'removed' : 'empty',
+              rightType: hasRight ? 'added' : 'empty',
+              leftLineNum: hasLeft ? leftLineNum++ : null,
+              rightLineNum: hasRight ? rightLineNum++ : null,
             });
           }
           index += 2;
@@ -125,15 +189,36 @@ export default defineComponent({
         const lines = chunkLines(current.value);
         if (current.added) {
           lines.forEach((line) => {
-            rows.push({ leftText: '', rightText: line, leftType: 'empty', rightType: 'added' });
+            rows.push({
+              leftText: '',
+              rightText: line,
+              leftType: 'empty',
+              rightType: 'added',
+              leftLineNum: null,
+              rightLineNum: rightLineNum++,
+            });
           });
         } else if (current.removed) {
           lines.forEach((line) => {
-            rows.push({ leftText: line, rightText: '', leftType: 'removed', rightType: 'empty' });
+            rows.push({
+              leftText: line,
+              rightText: '',
+              leftType: 'removed',
+              rightType: 'empty',
+              leftLineNum: leftLineNum++,
+              rightLineNum: null,
+            });
           });
         } else {
           lines.forEach((line) => {
-            rows.push({ leftText: line, rightText: line, leftType: 'unchanged', rightType: 'unchanged' });
+            rows.push({
+              leftText: line,
+              rightText: line,
+              leftType: 'unchanged',
+              rightType: 'unchanged',
+              leftLineNum: leftLineNum++,
+              rightLineNum: rightLineNum++,
+            });
           });
         }
         index += 1;
@@ -219,8 +304,8 @@ export default defineComponent({
 
 .split-header {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: var(--space-1);
+  grid-template-columns: auto minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: 0 var(--space-1);
   padding: 0 var(--space-3);
   font-weight: 600;
   color: var(--muted);
@@ -228,8 +313,8 @@ export default defineComponent({
 
 .split-body {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: var(--space-1);
+  grid-template-columns: auto minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: 0;
   align-items: start;
   width: 100%;
 }
@@ -238,11 +323,21 @@ export default defineComponent({
   display: contents;
 }
 
+.line-num {
+  padding: 0 0.5rem;
+  min-height: 1.5rem;
+  line-height: 1.5rem;
+  text-align: right;
+  color: var(--muted);
+  user-select: none;
+  min-width: 2.5rem;
+}
+
 .cell {
-  padding: 0.35rem 0.75rem;
+  padding: 0 0.75rem;
   white-space: pre;
-  border-radius: var(--radius-sm);
-  min-height: 1.75rem;
+  min-height: 1.5rem;
+  line-height: 1.5rem;
 }
 
 .cell.added {
@@ -264,12 +359,12 @@ export default defineComponent({
 @media (max-width: 720px) {
   .split-body,
   .split-header {
-    grid-template-columns: 1fr;
+    grid-template-columns: auto 1fr;
   }
 
   .split-row {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: auto 1fr;
   }
 }
 </style>
